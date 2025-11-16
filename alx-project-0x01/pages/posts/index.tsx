@@ -1,19 +1,19 @@
-import PostCard from "@/components/common/PostCard";
 import Header from "@/components/layout/Header";
-import { PostProps } from "@/interfaces";
+import UserCard from "@/components/common/UserCard";
+import { UserProps } from "@/interfaces";
 
-const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
+const Users: React.FC<{ users: UserProps[] }> = ({ users }) => {
   return (
     <div className="flex flex-col h-screen">
       <Header />
       <main className="p-4">
-        <div className="flex justify-between">
-          <h1 className=" text-2xl font-semibold">Post Content</h1>
-          <button className="bg-blue-700 px-4 py-2 rounded-full text-white">Add Post</button>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {posts?.map(({ title, body, userId, id }: PostProps, key: number) => (
-            <PostCard title={title} body={body} userId={userId} id={id} key={key} />
+        <h1 className="text-2xl font-semibold mb-4">Users List</h1>
+        <div className="grid grid-cols-3 gap-4">
+          {users?.map((user) => (
+            <UserCard
+              key={user.id}
+              {...user}
+            />
           ))}
         </div>
       </main>
@@ -22,14 +22,14 @@ const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
 };
 
 export async function getStaticProps() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const posts = await response.json();
+  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const users = await response.json();
 
   return {
     props: {
-      posts,
+      users,
     },
   };
 }
 
-export default Posts;
+export default Users;
