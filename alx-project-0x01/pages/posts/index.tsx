@@ -4,12 +4,17 @@ import Header from "@/components/layout/Header";
 import { UserData } from "@/interfaces";
 import { useState } from "react";
 
-const Users: React.FC<{ users: UserData[] }> = ({ users }) => {
+interface UsersProps {
+  users: UserData[];
+}
+
+const Users: React.FC<UsersProps> = ({ users }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState<UserData | null>(null);
+  const [allUsers, setAllUsers] = useState<UserData[]>(users);
 
   const handleAddUser = (user: UserData) => {
-    setNewUser({ ...user, id: users.length + 1 });
+    const newUser = { ...user, id: allUsers.length + 1 };
+    setAllUsers(prev => [...prev, newUser]);
   };
 
   return (
@@ -25,16 +30,18 @@ const Users: React.FC<{ users: UserData[] }> = ({ users }) => {
             Add User
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-2 mt-4">
-          {users?.map(user => (
-            <UserCard key={user.id} {...user} />
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          {allUsers.map(user => (
+            <UserCard key={user.id} user={user} />
           ))}
-          {newUser && <UserCard {...newUser} />}
         </div>
       </main>
 
       {isModalOpen && (
-        <UserModal onClose={() => setModalOpen(false)} onSubmit={handleAddUser} />
+        <UserModal
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleAddUser}
+        />
       )}
     </div>
   );
@@ -42,7 +49,7 @@ const Users: React.FC<{ users: UserData[] }> = ({ users }) => {
 
 export async function getStaticProps() {
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const users = await response.json();
+  const users: UserData[] = await response.json();
 
   return { props: { users } };
 }
